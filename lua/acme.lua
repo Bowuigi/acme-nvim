@@ -7,7 +7,7 @@ local function GetVSel()
 	local vStart = A.nvim_buf_get_mark(0,'<')
 	local vEnd = A.nvim_buf_get_mark(0,'>')
 	local lines = A.nvim_buf_get_lines(0, vStart[1], vEnd[1], false)
-	return lines:sub(vStart[1], -vEnd[1])
+	string.sub(lines, vStart[1], -vEnd[1])
 end
 
 local function MakeTagline()
