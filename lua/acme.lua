@@ -50,7 +50,7 @@ local function MakeTmpBuf(title, content)
 	F.appendbufline(b,0, content)
 end
 
-function acme.exec_sh(cmd)
+local function ExecSH(cmd)
 	local buf = F.systemlist(cmd)
 	buf[#buf+1] = ""
 	buf[#buf+1] = "Command '"..cmd.."' exited with status code "..vim.v.shell_error
@@ -73,7 +73,7 @@ function acme.exec()
 
 	vim.notify(vim.fn.mode().." "..sel)
 
-	acme.exec_sh(sel)
+	ExecSH(sel)
 end
 
 return acme
