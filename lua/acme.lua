@@ -7,7 +7,11 @@ local function GetVSel()
 	local vStart = A.nvim_buf_get_mark(0,'<')
 	local vEnd = A.nvim_buf_get_mark(0,'>')
 	local lines = A.nvim_buf_get_lines(0, vStart[1], vEnd[1], false)
-	string.sub(lines, vStart[1], -vEnd[1])
+	if (lines == {}) then
+		A.nvim_err_writeln("No selection")
+	end
+	lines[1] = string.sub(lines[1], vStart[1])
+	lines[#lines] = string.sub(lines[#lines], 1, vEnd[1])
 end
 
 local function MakeTagline()
