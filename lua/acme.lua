@@ -42,7 +42,7 @@ function acme.exec()
 		sel = vim.fn.expand("<cword>")
 	end
 
-	vim.notify(sel)
+	vim.notify(vim.fn.mode().." "..sel)
 end
 
 return acme
