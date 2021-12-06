@@ -71,8 +71,6 @@ function acme.exec()
 		return
 	end
 
-	vim.notify(vim.fn.mode().." "..sel)
-
 	ExecSH(sel)
 end
 
