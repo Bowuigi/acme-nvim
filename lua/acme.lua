@@ -1,40 +1,44 @@
 local acme = {}
+local BO = vim.bo
+local WO = vim.wo
 local A = vim.api
 local F = vim.fn
-local BO = vim.bo
 
 local function GetVSel()
-	local vStart = A.nvim_buf_get_mark(0,'<')
-	local vEnd = A.nvim_buf_get_mark(0,'>')
+	local vStart = A.nvim_buf_get_mark(0,"<")
+	local vEnd = A.nvim_win_get_cursor(0)
 	local lines = A.nvim_buf_get_lines(0, vStart[1], vEnd[1], false)
-	if (lines == {}) then
-		A.nvim_err_writeln("No selection")
-	end
 	lines[1] = string.sub(lines[1], vStart[1])
 	lines[#lines] = string.sub(lines[#lines], 1, vEnd[1])
+	return F.join(lines)
 end
 
-local function MakeTagline()
+function acme.tagline()
 	A.nvim_command("top new")
-	A.nvim_buf_set_name(0,"Tagline")
+	local b = A.nvim_get_current_buf()
+	A.nvim_buf_set_name(b,"Tagline")
 	BO.buftype = "nofile"
-	BO.statusline = "%{''}"
 	BO.bufhidden = "wipe"
-	BO.winfixheight = true
+	WO.winfixheight = true
 	A.nvim_command("resize 1")
-	F.appendbuf(0, "Get | Del Look . |")
+	F.appendbufline(b,0, "Get | Del Look . |")
+	A.nvim_command("0")
 end
 
 local function MakeTmpBuf(title, content)
 	A.nvim_command("botright new")
-	A.nvim_buf_set_name(0, title)
+	local b = A.nvim_get_current_buf()
+	A.nvim_buf_set_name(b, title)
 	BO.buftype = "nofile"
 	BO.bufhidden = "wipe"
-	F.appendbuf(0, content)
+	F.appendbufline(b,0, content)
 end
 
 function acme.exec_sh(cmd)
-	MakeTmpBuf("Shell command output", F.system(cmd))
+	local buf = F.systemlist(cmd)
+	buf[#buf+1] = ""
+	buf[#buf+1] = "Command '"..cmd.."' exited with status code "..vim.v.shell_error
+	MakeTmpBuf("Shell command output", buf)
 end
 
 function acme.exec()
@@ -46,7 +50,14 @@ function acme.exec()
 		sel = vim.fn.expand("<cword>")
 	end
 
+	if (sel == nil) then
+		A.nvim_err_writeln("No selection")
+		return
+	end
+
 	vim.notify(vim.fn.mode().." "..sel)
+
+	acme.exec_sh(sel)
 end
 
 return acme
