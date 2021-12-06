@@ -14,18 +14,34 @@ local function GetVSel()
 end
 
 function acme.tagline()
+	local title = "Tagline"
+
+	local w = F.bufwinid(title)
+	if (w > 0) then
+		A.nvim_win_close(w, false)
+		return
+	end
+
 	A.nvim_command("top new")
 	local b = A.nvim_get_current_buf()
-	A.nvim_buf_set_name(b,"Tagline")
+
+	A.nvim_buf_set_name(b, title)
+
 	BO.buftype = "nofile"
 	BO.bufhidden = "wipe"
 	WO.winfixheight = true
 	A.nvim_command("resize 1")
-	F.appendbufline(b,0, "Get | Del Look . |")
+
+	F.appendbufline(b, 0, "Get | Del Look . |")
 	A.nvim_command("0")
 end
 
 local function MakeTmpBuf(title, content)
+	local w = F.bufwinid(title)
+	if (w > 0) then
+		A.nvim_win_close(w, false)
+	end
+
 	A.nvim_command("botright new")
 	local b = A.nvim_get_current_buf()
 	A.nvim_buf_set_name(b, title)
