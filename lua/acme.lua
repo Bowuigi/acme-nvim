@@ -40,6 +40,24 @@ local function GetVSel()
 	return TJoin(lines)
 end
 
+-- Get the Visual Line ('V' mode) selection
+local function GetVLineSel()
+	-- Get the position where Visual Line mode started and finished
+	local vStart = F.line('v')
+	local vEnd = F.line('.')
+
+	-- Fix range being backwards
+	if (vEnd < vStart) then
+		vEnd, vStart = vStart, vEnd
+	end
+
+	-- Use the position to get what is in those lines
+	local lines = A.nvim_buf_get_lines(0, vStart-1, vEnd, false)
+
+	-- Return it all as a nicely formatted string
+	return TJoin(lines)
+end
+
 -- Make a temporal buffer to show data to the user
 local function MakeTmpBuf(title, content)
 	local w = F.bufwinid(title)
@@ -134,6 +152,7 @@ function acme.exec()
 	-- Get selection or word depending on the mode
 	sel = Switch (vim.fn.mode()) {
 		v = function() return GetVSel() end;
+		V = function() return GetVLineSel() end;
 		default = function() return vim.fn.expand("<cexpr>") end;
 	}
 
