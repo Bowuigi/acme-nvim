@@ -5,11 +5,18 @@ local A = vim.api
 local F = vim.fn
 
 local function GetVSel()
-	local vStart = A.nvim_buf_get_mark(0,"<")
+	local vStart = {F.line('v'), F.col('v')}
 	local vEnd = A.nvim_win_get_cursor(0)
-	local lines = A.nvim_buf_get_lines(0, vStart[1], vEnd[1], false)
-	lines[1] = string.sub(lines[1], vStart[1])
-	lines[#lines] = string.sub(lines[#lines], 1, vEnd[1])
+	local lines = A.nvim_buf_get_lines(0, vStart[1]-1, vEnd[1], false)
+
+	vim.notify(vim.inspect(vStart))
+	vim.notify(vim.inspect(vEnd))
+	vim.notify(vim.inspect(lines))
+
+	lines[1] = string.sub(lines[1], vStart[2])
+	lines[#lines] = string.sub(lines[#lines], 1, vEnd[2]-vStart[2]+2)
+
+	vim.notify(vim.inspect(lines))
 	return F.join(lines)
 end
 
