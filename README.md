@@ -29,10 +29,12 @@ Use the
 + `Enter` in Normal or Visual mode to execute commands
 + `<leader>` + `Enter` to execute the current line
 + `<leader>` + `t` keys to toggle the Tagline
++ `<leader>` + `m` keys to mark the visual selection (for use with `|`, `<`, `>`)
 
 ```vim
 nnoremap <CR> <Cmd>AcmeExec<CR>
 vnoremap <CR> <Cmd>AcmeExec<CR>
 nnoremap <leader><CR> V<Cmd>AcmeExec<CR>
 nnoremap <leader>t <Cmd>AcmeTagline<CR>
+nnoremap <leader>m <Cmd>AcmeMark<CR>
 ```
