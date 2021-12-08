@@ -9,15 +9,19 @@ Add this plugin with:
 
 ## What does it do?
 
-It exposes two functions and two commands:
+It exposes the following functions and commands:
 
 + `acme.exec` or `:AcmeExec`: If the user is on visual mode then execute the selection, otherwise execute the current word.
 + `acme.tagline` or `:AcmeTagline`: Toggle the editable tagline used for writing commands or other useful stuff
++ `acme.mark` or `:AcmeMark`: Mark a selection to pass it to a command
 
 "Execute" means checking the selection and acting accordingly, acme-nvim checks the first character of the selected text:
 
 + `:` Executes a Neovim command or Vimscript
-+ Everything else executes a shell command
++ `<` Executes a shell command overwriting the text marked with `AcmeMark` (Or `acme.mark`) with the command's output
++ `>` Executes a shell command passing the text marked with `:AcmeMark` (Or `acme.mark`) as standard input
++ `|` Executes a shell command passing the text marked with `:AcmeMark` (Or `acme.mark`) as standard input and overwriting the text inside the mark with the command's output
++ Everything else executes a shell command normally
 
 ## Example bindings
 

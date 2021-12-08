@@ -3,6 +3,9 @@ local BO = vim.bo
 local WO = vim.wo
 local A = vim.api
 local F = vim.fn
+acme.markStart = {0,0}
+acme.markEnd = {0,0}
+acme.markText = ""
 
 -- Convert a list of items into a single string, kinda like vim.fn.join but that adds newlines instead of nothing
 local function TJoin(t)
@@ -88,13 +91,71 @@ local function Switch(expr)
 	end
 end
 
+function acme.mark()
+	-- Get the position where Visual mode started and finished
+	local vStart = {F.line('v'), F.col('v')}
+	local vEnd = {F.line('.'), F.col('.')}
+
+	vim.notify(vim.inspect(vStart))
+	vim.notify(vim.inspect(vEnd))
+
+	-- Fix range being backwards
+	if (vEnd[1] < vStart[1]) then
+		vEnd, vStart = vStart, vEnd
+	elseif (vEnd[1] == vStart[1] and vEnd[2] < vStart[2]) then
+		vEnd, vStart = vStart, vEnd
+	end
+
+	vim.notify(vim.inspect(vStart))
+	vim.notify(vim.inspect(vEnd))
+
+	-- Use the position to get what is in those lines
+	local lines = A.nvim_buf_get_lines(0, vStart[1]-1, vEnd[1], false)
+
+	vim.notify(vim.inspect(lines))
+
+	if (F.mode() == "v") then
+		lines[1] = string.sub(lines[1], vStart[2])
+		lines[#lines] = string.sub(lines[#lines], 1, vEnd[2]-vStart[2]+1)
+	end
+
+	vim.notify(vim.inspect(lines))
+
+	-- Save the region and the text for use with '|', '<' and '>'
+	acme.markStart = vStart
+	acme.markEnd = vEnd
+	acme.markText = TJoin(lines)
+end
+
 -- Execute shell commands
 function acme.execSh(cmd)
-	-- Execute the command and return a list of strings
-	local buf = F.systemlist(cmd)
+	local input, output, buf
+
+	Switch (cmd:sub(1,1)) {
+		["|"] = function()
+			input = acme.markText
+			output =  F.systemlist("echo "..F.shellescape(input).." | "..cmd:sub(2))
+			output[#output+1] = ""
+			A.nvim_buf_set_text(0, acme.markStart[1]-1, acme.markStart[2]-1, acme.markEnd[1], acme.markEnd[2]-1, output)
+		end,
+		["<"] = function()
+			output =  F.systemlist(cmd:sub(2))
+			output[#output+1] = ""
+			A.nvim_buf_set_text(0, acme.markStart[1]-1, acme.markStart[2]-1, acme.markEnd[1], acme.markEnd[2]-1, output)
+		end,
+		[">"] = function()
+			input = acme.markText
+			output =  F.systemlist("echo "..F.shellescape(input).." | "..cmd:sub(2))
+			output[#output+1] = ""
+		end,
+		default = function()
+			output = F.systemlist(cmd)
+		end
+	}
+
+	buf = output
 
 	-- Append exit status info
-	buf[#buf+1] = ""
 	buf[#buf+1] = "Command '"..cmd.."' exited with status code "..vim.v.shell_error
 
 	-- Show data to the user
