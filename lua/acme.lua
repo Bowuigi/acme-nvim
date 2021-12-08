@@ -96,9 +96,6 @@ function acme.mark()
 	local vStart = {F.line('v'), F.col('v')}
 	local vEnd = {F.line('.'), F.col('.')}
 
-	vim.notify(vim.inspect(vStart))
-	vim.notify(vim.inspect(vEnd))
-
 	-- Fix range being backwards
 	if (vEnd[1] < vStart[1]) then
 		vEnd, vStart = vStart, vEnd
@@ -106,20 +103,13 @@ function acme.mark()
 		vEnd, vStart = vStart, vEnd
 	end
 
-	vim.notify(vim.inspect(vStart))
-	vim.notify(vim.inspect(vEnd))
-
 	-- Use the position to get what is in those lines
 	local lines = A.nvim_buf_get_lines(0, vStart[1]-1, vEnd[1], false)
-
-	vim.notify(vim.inspect(lines))
 
 	if (F.mode() == "v") then
 		lines[1] = string.sub(lines[1], vStart[2])
 		lines[#lines] = string.sub(lines[#lines], 1, vEnd[2]-vStart[2]+1)
 	end
-
-	vim.notify(vim.inspect(lines))
 
 	-- Save the region and the text for use with '|', '<' and '>'
 	acme.markStart = vStart
