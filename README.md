@@ -7,6 +7,10 @@ Add this plugin with:
 + Vim-plug: `Plug 'Bowuigi/acme-nvim'`
 + Packer: `use 'Bowuigi/acme-nvim'` or add `"Bowuigi/acme-nvim"` to the plugins table
 
+[![asciicast](https://asciinema.org/a/454686.png)](https://asciinema.org/a/454686)
+
+Example usage
+
 ## What does it do?
 
 It exposes the following functions and commands:
