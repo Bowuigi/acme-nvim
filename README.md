@@ -25,7 +25,6 @@ It exposes the following functions and commands:
 
 ## Example bindings
 
-Use the
 + `Enter` in Normal or Visual mode to execute commands
 + `<leader>` + `Enter` to execute the current line
 + `<leader>` + `t` keys to toggle the Tagline
